@@ -1,4 +1,4 @@
-## react-native-wheel-scroll-picker
+## react-native-wheely-good-picker
 
 a pure js picker, each option item customizable
 
@@ -8,12 +8,12 @@ a pure js picker, each option item customizable
 ### usage
 
 ```shell
-npm install react-native-wheel-scroll-picker --save
+npm install react-native-wheely-good-picker --save
 ```
 
 ```jsx
 import React, {Component} from 'react';
-import ScrollPicker from 'react-native-wheel-scroll-picker';
+import ScrollPicker from 'react-native-wheely-good-picker';
 
 export default class SimpleExample extends Component {
 
@@ -35,12 +35,12 @@ export default class SimpleExample extends Component {
                   }}
                   wrapperHeight={180}
                   wrapperWidth={150}
-                  wrapperBackground={'#FFFFFF'}
+                  wrapperBackground="#FFFFFF"
                   itemHeight={60}
-                  highlightColor={'#d8d8d8'}
+                  highlightColor="#d8d8d8"
                   highlightBorderWidth={2}
-                  activeItemColor={'#222121'}
-                  itemColor={'#B4B4B4'}
+                  activeItemColor="#222121"
+                  itemColor="#222121"
                 />
         )
     }
