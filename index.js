@@ -35,14 +35,14 @@ export const SelectedItem = styled.View`
 `;
 const deviceWidth = Dimensions.get('window').width;
 export default class ScrollPicker extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.onMomentumScrollBegin = this.onMomentumScrollBegin.bind(this);
     this.onMomentumScrollEnd = this.onMomentumScrollEnd.bind(this);
     this.onScrollBeginDrag = this.onScrollBeginDrag.bind(this);
     this.onScrollEndDrag = this.onScrollEndDrag.bind(this);
     this.state = {
-      selectedIndex: 1,
+      selectedIndex: props.selectedIndex || 0,
     }
   }
 
