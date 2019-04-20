@@ -1,3 +1,6 @@
+/* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/require-default-props */
+/* eslint-disable import/no-extraneous-dependencies */
 import React from 'react';
 import styled from 'styled-components';
 import {
@@ -43,13 +46,15 @@ export default class ScrollPicker extends React.Component {
     this.onScrollEndDrag = this.onScrollEndDrag.bind(this);
     this.state = {
       selectedIndex: props.selectedIndex || 0,
-    }
+    };
   }
 
   componentDidMount() {
-    if (this.props.selectedIndex) {
+    const { selectedIndex } = this.props;
+
+    if (selectedIndex) {
       setTimeout(() => {
-        this.scrollToIndex(this.props.selectedIndex);
+        this.scrollToIndex(selectedIndex);
       }, 0);
     }
   }
@@ -57,86 +62,6 @@ export default class ScrollPicker extends React.Component {
   componentWillUnmount() {
     if (this.timer) {
       clearTimeout(this.timer);
-    }
-  }
-
-  render() {
-    const {header, footer} = this.renderPlaceHolder();
-    return (
-      <Container wrapperHeight={this.props.wrapperHeight} wrapperWidth={this.props.wrapperWidth}
-                 wrapperBackground={this.props.wrapperBackground}>
-        <HighLightView highlightColor={this.props.highlightColor}
-                       highlightWidth={this.props.highlightWidth}
-                       wrapperHeight={this.props.wrapperHeight}
-                       itemHeight={this.props.itemHeight}
-                       highlightBorderWidth={this.props.highlightBorderWidth}/>
-        <ScrollView
-          ref={(sview) => {
-            this.sview = sview;
-          }}
-          bounces={false}
-          showsVerticalScrollIndicator={false}
-          onTouchStart={this.props.onTouchStart}
-          onMomentumScrollBegin={this.onMomentumScrollBegin}
-          onMomentumScrollEnd={this.onMomentumScrollEnd}
-          onScrollBeginDrag={this.onScrollBeginDrag}
-          onScrollEndDrag={this.onScrollEndDrag}
-        >
-          {header}
-          {this.props.dataSource.map(this.renderItem.bind(this))}
-          {footer}
-        </ScrollView>
-      </Container>
-    );
-  }
-
-  renderPlaceHolder() {
-    const height = (this.props.wrapperHeight - this.props.itemHeight) / 2;
-    const header = <View style={{height, flex: 1}}></View>;
-    const footer = <View style={{height, flex: 1}}></View>;
-    return {header, footer};
-  }
-
-  renderItem(data, index) {
-    const isSelected = index === this.state.selectedIndex;
-    const item = <Text style={isSelected ? this.props.activeItemTextStyle : this.props.itemTextStyle}>{data}</Text>;
-
-    return (
-      <SelectedItem key={index} itemHeight={this.props.itemHeight}>
-        {item}
-      </SelectedItem>
-    );
-  }
-
-  scrollFix(e) {
-    let verticalY = 0;
-    const h = this.props.itemHeight;
-    if (e.nativeEvent.contentOffset) {
-      verticalY = e.nativeEvent.contentOffset.y;
-    }
-    let selectedIndex = Math.round(verticalY / h);
-    let verticalElem = selectedIndex * h;
-    if (selectedIndex >= this.props.dataSource.length) {
-      selectedIndex = this.props.dataSource.length - 1
-      verticalElem = (this.props.dataSource.length - 1) * h;
-    }
-    if (verticalElem !== verticalY) {
-      // using scrollTo in ios, onMomentumScrollEnd will be invoked
-      if (Platform.OS === 'ios') {
-        this.isScrollTo = true;
-      }
-      this.sview.scrollTo({y: verticalElem});
-    }
-    if (this.state.selectedIndex === selectedIndex) {
-      return;
-    }
-    this.setState({
-      selectedIndex,
-    });
-    // onValueChange
-    if (this.props.onValueChange) {
-      const selectedValue = this.props.dataSource[selectedIndex];
-      this.props.onValueChange(selectedValue, selectedIndex);
     }
   }
 
@@ -151,7 +76,9 @@ export default class ScrollPicker extends React.Component {
   }
 
   onScrollEndDrag(e) {
-    this.props.onScrollEndDrag();
+    const { onScrollEndDrag } = this.props;
+
+    onScrollEndDrag();
     this.dragStarted = false;
     // if not used, event will be garbaged
     const element = {
@@ -182,24 +109,136 @@ export default class ScrollPicker extends React.Component {
   }
 
   onMomentumScrollEnd(e) {
-    this.props.onMomentumScrollEnd();
+    const { onMomentumScrollEnd } = this.props;
+
+    onMomentumScrollEnd();
     this.momentumStarted = false;
     if (!this.isScrollTo && !this.momentumStarted && !this.dragStarted) {
       this.scrollFix(e);
     }
   }
 
+  scrollFix(e) {
+    let verticalY = 0;
+    const { selectedIndex: stateSelectedIndex } = this.state;
+    const { itemHeight: h, dataSource, onValueChange } = this.props;
+
+    if (e.nativeEvent.contentOffset) {
+      verticalY = e.nativeEvent.contentOffset.y;
+    }
+    let selectedIndex = Math.round(verticalY / h);
+    let verticalElem = selectedIndex * h;
+    if (selectedIndex >= dataSource.length) {
+      selectedIndex = dataSource.length - 1;
+      verticalElem = (dataSource.length - 1) * h;
+    }
+    if (verticalElem !== verticalY) {
+      // using scrollTo in ios, onMomentumScrollEnd will be invoked
+      if (Platform.OS === 'ios') {
+        this.isScrollTo = true;
+      }
+      this.sview.scrollTo({ y: verticalElem });
+    }
+    if (stateSelectedIndex === selectedIndex) {
+      return;
+    }
+    this.setState({
+      selectedIndex,
+    });
+    // onValueChange
+    if (onValueChange) {
+      const selectedValue = dataSource[selectedIndex];
+      onValueChange(selectedValue, selectedIndex);
+    }
+  }
+
   scrollToIndex(ind) {
+    const { itemHeight } = this.props;
+
     this.setState({
       selectedIndex: ind,
     });
-    const y = this.props.itemHeight * ind;
-    this.sview.scrollTo({y});
+    const y = itemHeight * ind;
+    this.sview.scrollTo({ y });
+  }
+
+  renderItem(data, index) {
+    const { selectedIndex } = this.state;
+    const { activeItemTextStyle, itemTextStyle, itemHeight } = this.props;
+    const isSelected = index === selectedIndex;
+    const item = (
+      <Text
+        style={isSelected ? activeItemTextStyle : itemTextStyle}
+      >
+        {data}
+      </Text>
+    );
+
+    return (
+      <SelectedItem key={index} itemHeight={itemHeight}>
+        {item}
+      </SelectedItem>
+    );
+  }
+
+  renderPlaceHolder() {
+    const { wrapperHeight, itemHeight } = this.props;
+    const height = (wrapperHeight - itemHeight) / 2;
+    const header = <View style={{ height, flex: 1 }} />;
+    const footer = <View style={{ height, flex: 1 }} />;
+
+    return { header, footer };
+  }
+
+  render() {
+    const {
+      wrapperHeight,
+      wrapperWidth,
+      wrapperBackground,
+      highlightColor,
+      highlightWidth,
+      itemHeight,
+      highlightBorderWidth,
+      onTouchStart,
+      dataSource
+    } = this.props;
+    const { header, footer } = this.renderPlaceHolder();
+    return (
+      <Container
+        wrapperHeight={wrapperHeight}
+        wrapperWidth={wrapperWidth}
+        wrapperBackground={wrapperBackground}
+      >
+        <HighLightView
+          highlightColor={highlightColor}
+          highlightWidth={highlightWidth}
+          wrapperHeight={wrapperHeight}
+          itemHeight={itemHeight}
+          highlightBorderWidth={highlightBorderWidth}
+        />
+        <ScrollView
+          ref={(sview) => {
+            this.sview = sview;
+          }}
+          bounces={false}
+          showsVerticalScrollIndicator={false}
+          onTouchStart={onTouchStart}
+          onMomentumScrollBegin={this.onMomentumScrollBegin}
+          onMomentumScrollEnd={this.onMomentumScrollEnd}
+          onScrollBeginDrag={this.onScrollBeginDrag}
+          onScrollEndDrag={this.onScrollEndDrag}
+        >
+          {header}
+          {dataSource.map(this.renderItem.bind(this))}
+          {footer}
+        </ScrollView>
+      </Container>
+    );
   }
 }
 ScrollPicker.propTypes = {
-  style: PropTypes.object,
-  dataSource: PropTypes.array,
+  style: PropTypes.objectOf(PropTypes.any),
+  dataSource: PropTypes.arrayOf(PropTypes.any),
   selectedIndex: PropTypes.number,
   onValueChange: PropTypes.func,
   renderItem: PropTypes.func,
@@ -210,8 +249,8 @@ ScrollPicker.propTypes = {
   wrapperHeight: PropTypes.number,
   highlightWidth: PropTypes.number,
   highlightBorderWidth: PropTypes.number,
-  itemTextStyle: PropTypes.object,
-  activeItemTextStyle: PropTypes.object,
+  itemTextStyle: PropTypes.objectOf(PropTypes.any),
+  activeItemTextStyle: PropTypes.objectOf(PropTypes.any),
   onMomentumScrollEnd: PropTypes.func,
   onScrollEndDrag: PropTypes.func,
 };
@@ -228,6 +267,10 @@ ScrollPicker.defaultProps = {
   },
   onScrollEndDrag: () => {
   },
-  itemTextStyle: {fontSize: 20, lineHeight: 26, textAlign: 'center', color: '#B4B4B4'},
-  activeItemTextStyle: {fontSize: 20, lineHeight: 26, textAlign: 'center', color: '#222121'}
+  itemTextStyle: {
+    fontSize: 20, lineHeight: 26, textAlign: 'center', color: '#B4B4B4'
+  },
+  activeItemTextStyle: {
+    fontSize: 20, lineHeight: 26, textAlign: 'center', color: '#222121'
+  }
 };
