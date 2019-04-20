@@ -1,5 +1,9 @@
 ## react-native-wheely-good-picker
 
+### changes in fork
+* ensured scroll on footer is forbidden (no more scrolling under list)
+* applied some Airbnb eslint rules
+
 a pure js picker, each option item customizable
 
 ![example](./demo/test.gif)
