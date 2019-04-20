@@ -114,8 +114,12 @@ export default class ScrollPicker extends React.Component {
     if (e.nativeEvent.contentOffset) {
       verticalY = e.nativeEvent.contentOffset.y;
     }
-    const selectedIndex = Math.round(verticalY / h);
-    const verticalElem = selectedIndex * h;
+    let selectedIndex = Math.round(verticalY / h);
+    let verticalElem = selectedIndex * h;
+    if (selectedIndex >= this.props.dataSource.length) {
+      selectedIndex = this.props.dataSource.length - 1
+      verticalElem = (this.props.dataSource.length - 1) * h;
+    }
     if (verticalElem !== verticalY) {
       // using scrollTo in ios, onMomentumScrollEnd will be invoked
       if (Platform.OS === 'ios') {
