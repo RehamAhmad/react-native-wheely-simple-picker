@@ -11,9 +11,7 @@ a pure js picker, each option item customizable
 
 ### usage
 
-```shell
-npm install react-native-wheely-good-picker --save
-```
+`Since I have not published this fork on npm you need to download repo and put the source code in your vendor folder.`
 
 ```jsx
 import React, {Component} from 'react';
