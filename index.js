@@ -2,7 +2,7 @@
 /* eslint-disable react/require-default-props */
 /* eslint-disable import/no-extraneous-dependencies */
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import {
   View,
   Text,
