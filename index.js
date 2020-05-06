@@ -227,6 +227,7 @@ export default class ScrollPicker extends React.Component {
           onMomentumScrollEnd={this.onMomentumScrollEnd}
           onScrollBeginDrag={this.onScrollBeginDrag}
           onScrollEndDrag={this.onScrollEndDrag}
+          nestedScrollEnabled={true}
         >
           {header}
           {dataSource.map(this.renderItem.bind(this))}
