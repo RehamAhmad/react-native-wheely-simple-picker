@@ -11,7 +11,7 @@ a pure js picker, each option item customizable
 
 ### usage
 
-`Since I have not published this fork on npm you need to download repo and put the source code in your vendor folder.`
+`npm i react-native-wheely-simple-picker`
 
 ```jsx
 import React, {Component} from 'react';
