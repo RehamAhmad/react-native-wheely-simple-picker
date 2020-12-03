@@ -24,14 +24,14 @@ export const HighLightView = styled.View`
   position: absolute;
   top: ${props => (props.wrapperHeight - props.itemHeight) / 2};
   height: ${props => props.itemHeight};
-  width: ${props => props.highlightWidth};
-  border-top-color: ${props => props.highlightColor};
-  border-bottom-color: ${props => props.highlightColor};
-  border-top-width: ${props => props.highlightBorderWidth}px;
-  border-bottom-width: ${props => props.highlightBorderWidth}px;
+  width:50px;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
 `;
 export const SelectedItem = styled.View`
   height: 30px;
+  width:40;
   justify-content: center;
   align-items: center;
   height: ${props => props.itemHeight};
@@ -163,12 +163,42 @@ export default class ScrollPicker extends React.Component {
   }
 
   renderItem(data, index) {
+    const opacities = {
+      0: 1,
+      1: 0.7,
+      2: 0.3,
+      3: 0.2,
+      4: 0.1,
+  };
+  const sizeText = {
+      0: 27,
+      1: 27,
+      2: 23,
+  };
+  
+  
     const { selectedIndex } = this.state;
     const { activeItemTextStyle, itemTextStyle, itemHeight } = this.props;
     const isSelected = index === selectedIndex;
+    const gap = Math.abs(index - selectedIndex);
+
+    let opacity = opacities[gap];
+    let fontSize = sizeText[gap];
+    if (isSelected) {
+        opacity = opacities[0];
+        fontSize = sizeText[0];
+    } else if (index === selectedIndex - 1 || index === selectedIndex + 1) {
+        opacity = opacities[1];
+        fontSize = sizeText[2];
+
+    } else {
+        opacity = opacities[2];
+        fontSize = sizeText[3];
+    }
+
     const item = (
       <Text
-        style={isSelected ? activeItemTextStyle : itemTextStyle}
+        style={[isSelected ? activeItemTextStyle : itemTextStyle,{opacity,fontSize}]}
       >
         {data}
       </Text>
@@ -269,9 +299,9 @@ ScrollPicker.defaultProps = {
   onScrollEndDrag: () => {
   },
   itemTextStyle: {
-    fontSize: 20, lineHeight: 26, textAlign: 'center', color: '#B4B4B4'
+    fontSize: 20,textAlign: 'center', color: '#000'
   },
   activeItemTextStyle: {
-    fontSize: 20, lineHeight: 26, textAlign: 'center', color: '#222121'
+    fontSize: 20,textAlign: 'center', color: '#fff'
   }
 };
